@@ -43,3 +43,14 @@ jobs:
       - name: Build Review Docker image
         run: docker build -t eks-java-review ./review
 
+      - name: Tag Product Docker image
+        run: docker tag eks-java-product:latest 591553897650.dkr.ecr.ap-southeast-2.amazonaws.com/eks-java-product:latest
+
+      - name: Tag Review Docker image
+        run: docker tag eks-java-review:latest 591553897650.dkr.ecr.ap-southeast-2.amazonaws.com/eks-java-review:latest
+
+      - name: Push Product image to ECR
+        run: docker push 591553897650.dkr.ecr.ap-southeast-2.amazonaws.com/eks-java-product:latest
+
+      - name: Push Review image to ECR
+        run: docker push 591553897650.dkr.ecr.ap-southeast-2.amazonaws.com/eks-java-review:latest
