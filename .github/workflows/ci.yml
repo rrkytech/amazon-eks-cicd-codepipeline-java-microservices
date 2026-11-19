@@ -36,3 +36,10 @@ jobs:
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Product Docker image
+        run: docker build -t eks-java-product ./product
+
+      - name: Build Review Docker image
+        run: docker build -t eks-java-review ./review
+
