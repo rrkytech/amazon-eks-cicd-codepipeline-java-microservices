@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
         - name: review
-          image: REVIEW_CONTAINER_IMAGE
+          image: 591553897650.dkr.ecr.ap-southeast-2.amazonaws.com/eks-java-review:latest
           resources:
             requests:
               memory: "512Mi"
@@ -42,7 +42,7 @@ spec:
           ports:
             - containerPort: 8080
 ---
-apiVersion: autoscaling/v2beta2
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: review-hpa
@@ -93,7 +93,7 @@ spec:
     spec:
       containers:
         - name: product
-          image: PRODUCT_CONTAINER_IMAGE
+          image: 591553897650.dkr.ecr.ap-southeast-2.amazonaws.com/eks-java-product:latest
           resources:
             requests:
               memory: "512Mi"
@@ -107,7 +107,7 @@ spec:
             - name: REVIEW_URL
               value: "http://review-clusterip-service:8080/"
 ---
-apiVersion: autoscaling/v2beta2
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: product-hpa

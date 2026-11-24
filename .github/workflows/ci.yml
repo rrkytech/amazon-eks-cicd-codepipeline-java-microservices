@@ -1,4 +1,4 @@
-name: Java Maven CI
+name: Java Maven CI/CD
 
 on:
   push:
@@ -8,9 +8,13 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build:
-    name: Maven Build
+    name: Maven Build and Deploy
     runs-on: ubuntu-latest
 
     steps:
@@ -27,11 +31,10 @@ jobs:
       - name: Build with Maven
         run: mvn clean package
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials using OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::591553897650:role/GitHubActionsEKSRole
           aws-region: ap-southeast-2
 
       - name: Login to Amazon ECR
@@ -54,3 +57,21 @@ jobs:
 
       - name: Push Review image to ECR
         run: docker push 591553897650.dkr.ecr.ap-southeast-2.amazonaws.com/eks-java-review:latest
+
+      - name: Update kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig \
+            --region ap-southeast-2 \
+            --name eks-java-cluster
+
+      - name: Configure ALB IngressClass
+        run: kubectl apply -f alb-class.yaml
+
+      - name: Deploy Product and Review to EKS
+        run: kubectl apply -f k8s-microservices-full.yaml
+
+      - name: Verify Review rollout
+        run: kubectl rollout status deployment/review-deployment --timeout=5m
+
+      - name: Verify Product rollout
+        run: kubectl rollout status deployment/product-deployment --timeout=5m
