@@ -4,11 +4,11 @@ phases:
   install:
     runtime-versions:
       java: corretto21
+
+  pre_build:
     commands:
-      - echo "Checking Java and Maven"
-      - java -version
-      - mvn -version
-      - docker --version
+      - echo "Logging in to Amazon ECR"
+      - aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 591553897650.dkr.ecr.ap-southeast-2.amazonaws.com
 
   build:
     commands:
@@ -21,9 +21,16 @@ phases:
       - echo "Building Product Docker image"
       - docker build -t product-test ./product
 
-      - echo "Checking Docker images"
-      - docker images
+      - echo "Tagging images for ECR"
+      - docker tag review-test:latest 591553897650.dkr.ecr.ap-southeast-2.amazonaws.com/eks-java-review:codebuild-test
+      - docker tag product-test:latest 591553897650.dkr.ecr.ap-southeast-2.amazonaws.com/eks-java-product:codebuild-test
 
   post_build:
     commands:
-      - echo "Docker build test completed successfully"
+      - echo "Pushing Review image to ECR"
+      - docker push 591553897650.dkr.ecr.ap-southeast-2.amazonaws.com/eks-java-review:codebuild-test
+
+      - echo "Pushing Product image to ECR"
+      - docker push 591553897650.dkr.ecr.ap-southeast-2.amazonaws.com/eks-java-product:codebuild-test
+
+      - echo "ECR push test completed successfully"
