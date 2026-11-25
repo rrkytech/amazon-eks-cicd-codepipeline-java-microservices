@@ -1,0 +1,9 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - echo "Hello from AWS CodeBuild"
+      - echo "GitHub to CodeBuild connection is working"
+      - pwd
+      - ls -la
