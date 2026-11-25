@@ -1,9 +1,17 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      java: corretto21
+    commands:
+      - echo "Checking Java version"
+      - java -version
+      - echo "Checking Maven version"
+      - mvn -version
+
   build:
     commands:
-      - echo "Hello from AWS CodeBuild"
-      - echo "GitHub to CodeBuild connection is working"
-      - pwd
-      - ls -la
+      - echo "Starting Maven build"
+      - mvn clean package -DskipTests
+      - echo "Maven build completed successfully"
