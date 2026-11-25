@@ -5,13 +5,25 @@ phases:
     runtime-versions:
       java: corretto21
     commands:
-      - echo "Checking Java version"
+      - echo "Checking Java and Maven"
       - java -version
-      - echo "Checking Maven version"
       - mvn -version
+      - docker --version
 
   build:
     commands:
-      - echo "Starting Maven build"
+      - echo "Building Maven project"
       - mvn clean package -DskipTests
-      - echo "Maven build completed successfully"
+
+      - echo "Building Review Docker image"
+      - docker build -t review-test ./review
+
+      - echo "Building Product Docker image"
+      - docker build -t product-test ./product
+
+      - echo "Checking Docker images"
+      - docker images
+
+  post_build:
+    commands:
+      - echo "Docker build test completed successfully"
